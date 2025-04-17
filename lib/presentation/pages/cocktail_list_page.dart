@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cocktail_bloc.dart';
 import '../../data/models/cocktail_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/cocktail_bloc.dart';
+import '../../data/models/cocktail_model.dart';
 
 class CocktailPage extends StatefulWidget {
   @override
@@ -10,20 +14,23 @@ class CocktailPage extends StatefulWidget {
 
 class _CocktailPageState extends State<CocktailPage> {
   final TextEditingController _controller = TextEditingController();
-  String lastQuery = "mojito";
+  String lastQuery = ""; // Изменил начальное значение на пустую строку
 
   @override
   void initState() {
     super.initState();
-    context.read<CocktailBloc>().add(SearchCocktailsEvent(lastQuery));
+    // Убрал автоматический поиск при инициализации
   }
 
   void _onSearch(String query) {
+    if (query.isEmpty) return; // Не выполняем поиск если запрос пустой
+    
     lastQuery = query;
     context.read<CocktailBloc>().add(SearchCocktailsEvent(query));
   }
 
   Future<void> _onRefresh() async {
+    if (lastQuery.isEmpty) return; // Не обновляем если нет последнего запроса
     context.read<CocktailBloc>().add(RefreshCocktailsEvent(lastQuery));
   }
 
@@ -43,8 +50,8 @@ class _CocktailPageState extends State<CocktailPage> {
           ),
           child: Row(
             children: [
-              Icon(Icons.search, color: Colors.grey), // Иконка поиска
-              SizedBox(width: 8), // Отступ между иконкой и текстовым полем
+              Icon(Icons.search, color: Colors.grey),
+              SizedBox(width: 8),
               Expanded(
                 child: TextField(
                   controller: _controller,
@@ -55,6 +62,14 @@ class _CocktailPageState extends State<CocktailPage> {
                   onSubmitted: _onSearch,
                 ),
               ),
+              if (_controller.text.isNotEmpty) // Добавил кнопку очистки
+                IconButton(
+                  icon: Icon(Icons.clear, color: Colors.grey, size: 20),
+                  onPressed: () {
+                    _controller.clear();
+                    setState(() {});
+                  },
+                ),
             ],
           ),
         ),
@@ -86,12 +101,24 @@ class _CocktailPageState extends State<CocktailPage> {
           } else if (state is CocktailError) {
             return Center(child: Text('Ошибка загрузки'));
           }
-          return SizedBox.shrink();
+          // Показываем подсказку при первом открытии
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.search, size: 50, color: Colors.grey),
+                SizedBox(height: 16),
+                Text('Введите название коктейля для поиска'),
+              ],
+            ),
+          );
         },
       ),
     );
   }
 }
+
+// Остальной код (CocktailCard, CocktailBloc и т.д.) остается без изменений
 
 class CocktailCard extends StatelessWidget {
   final CocktailModel cocktail;
