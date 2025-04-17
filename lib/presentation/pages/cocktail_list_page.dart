@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cocktail_bloc.dart';
 import '../../data/models/cocktail_model.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/cocktail_bloc.dart';
-import '../../data/models/cocktail_model.dart';
 
 class CocktailPage extends StatefulWidget {
   @override
@@ -14,23 +10,22 @@ class CocktailPage extends StatefulWidget {
 
 class _CocktailPageState extends State<CocktailPage> {
   final TextEditingController _controller = TextEditingController();
-  String lastQuery = ""; // Изменил начальное значение на пустую строку
+  String lastQuery = ""; 
 
   @override
   void initState() {
     super.initState();
-    // Убрал автоматический поиск при инициализации
   }
 
   void _onSearch(String query) {
-    if (query.isEmpty) return; // Не выполняем поиск если запрос пустой
+    if (query.isEmpty) return; 
     
     lastQuery = query;
     context.read<CocktailBloc>().add(SearchCocktailsEvent(query));
   }
 
   Future<void> _onRefresh() async {
-    if (lastQuery.isEmpty) return; // Не обновляем если нет последнего запроса
+    if (lastQuery.isEmpty) return; 
     context.read<CocktailBloc>().add(RefreshCocktailsEvent(lastQuery));
   }
 
@@ -185,9 +180,10 @@ class CocktailCard extends StatelessWidget {
             ),
           ),
           Text(
-            'Цена: 350₽',
+            'Цена: 550 c',
             style: TextStyle(color: Colors.green),
-          ), // сделай так чтобы цена тоже тут показывалось
+          ), 
+          SizedBox(height: 20),
           Center(
             child: Container(
               height: 32,
